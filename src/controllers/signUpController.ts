@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
 import { connect } from "@/lib/dbConfig";
+import hash from "@/lib/hash";
 
 export default async function signUpController(
   request: NextRequest
@@ -13,8 +14,8 @@ export default async function signUpController(
     // Check for conflict in user details
     console.log("Establishing Connection to Database");
     const existingUserUsername = await User.findOne({
-      username: requestData?.username,
-    }).exec();
+      username: requestData.username,
+    });
     console.log("Database Connection Established");
     if (existingUserUsername) {
       return NextResponse.json(
@@ -24,8 +25,8 @@ export default async function signUpController(
     }
 
     const existingUserEmail = await User.findOne({
-      email: requestData?.email,
-    }).exec();
+      email: requestData.email,
+    });
     if (existingUserEmail) {
       return NextResponse.json(
         { message: "Email Already In Use" },
@@ -35,9 +36,9 @@ export default async function signUpController(
 
     // Add user to db
     const newUser = new User({
-      username: requestData?.username,
-      email: requestData?.email,
-      password: requestData?.password,
+      username: requestData.username,
+      email: requestData.email,
+      password: await hash(requestData.password),
     });
 
     await newUser.save();

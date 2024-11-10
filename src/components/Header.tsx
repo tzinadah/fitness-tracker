@@ -13,7 +13,6 @@ export default function Header() {
         <Image
           src={brandImage}
           alt="Site Brand"
-          layout="responsive"
           className="img-fluid"
         ></Image>
       </Navbar.Brand>
